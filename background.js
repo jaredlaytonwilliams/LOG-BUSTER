@@ -2,23 +2,24 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "prettifyLogs",
     title: "Prettify Logs",
-    contexts: ["selection"]  // Only show when text is selected
+    contexts: ["selection"]
   });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "prettifyLogs" && info.selectionText) {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: (text) => {
-        try {
-          const parsed = JSON.parse(text);
-          alert(JSON.stringify(parsed, null, 2));  // temporary pretty-print
-        } catch (e) {
-          alert("Could not parse JSON: " + e.message);
-        }
-      },
-      args: [info.selectionText]
-    });
+    try {
+      const parsed = JSON.parse(info.selectionText);
+      const pretty = JSON.stringify(parsed, null, 2);
+
+      // Store it so popup can read it
+      chrome.storage.local.set({ lastLogs: pretty });
+
+      // Optionally notify user
+      chrome.action.openPopup();
+    } catch (e) {
+      chrome.storage.local.set({ lastLogs: "Could not parse JSON: " + e.message });
+      chrome.action.openPopup();
+    }
   }
 });
