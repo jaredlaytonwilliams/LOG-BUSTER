@@ -3,8 +3,17 @@
   "description": "Right-click Kibana logs and prettify them",
   "version": "1.0",
   "manifest_version": 3,
-  "permissions": ["contextMenus", "activeTab", "scripting", "clipboardRead", "clipboardWrite"],
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
   "background": {
     "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Kibana Log Prettifier"
   }
 }
